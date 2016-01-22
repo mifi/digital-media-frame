@@ -56,7 +56,8 @@
             loop: '1',
             modestbranding: '1',
             controls: 0,
-            iv_load_policy: '3'
+            iv_load_policy: '3',
+            showinfo: '0'
           },
           events: {
             'onReady': onPlayerReady,
@@ -85,7 +86,7 @@
         if (id == 100 || id == 101 || id == 150) {
           setTimeout(function() {
             player.nextVideo();
-          }, 5000);
+          }, 1000);
         }
         else {
           console.log('Unhandled YouTube error', id);
