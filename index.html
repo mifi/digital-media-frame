@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <style type="text/css">
+    html, body {
+      padding: 0;
+      margin: 0;
+      overflow: hidden;
+      background: black;
+    }
+    #player {
+      width: 100vw;
+      height: 100vh;
+    }
+    </style>
+  </head>
+
+  <body>
+    <!-- 1. The <iframe> (and video player) will replace this <div> tag. -->
+    <div id="player"></div>
+
+    <script src="https://code.jquery.com/jquery-2.2.0.min.js"></script>
+
+    <script>
+    /*
+    https://developers.google.com/youtube/js_api_reference
+    https://developers.google.com/youtube/player_parameters?playerVersion=HTML5
+    https://developers.google.com/youtube/player_parameters
+    */
+    // Test error by going to video "91 - Transformation"
+
+      var playlist = 'PL4166A6B67CF5C6AE';
+      /*var playbackQuality = 'hd720';
+      var playerWidth = '1280';
+      var playerHeight = '720';*/
+      var playerWidth = '1024';
+      var playerHeight = '600';
+      var playbackQuality = 'large';
+
+
+      // 2. This code loads the IFrame Player API code asynchronously.
+      var tag = document.createElement('script');
+
+      tag.src = "https://www.youtube.com/iframe_api";
+      var firstScriptTag = document.getElementsByTagName('script')[0];
+      firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+      var player;
+      function onYouTubeIframeAPIReady() {
+        player = new YT.Player('player', {
+          height: playerHeight,
+          width: playerWidth,
+          playerVars: {
+            /*autoplay: '1',*/
+            fs: '0',
+            loop: '1',
+            modestbranding: '1',
+            controls: 0,
+            iv_load_policy: '3'
+          },
+          events: {
+            'onReady': onPlayerReady,
+            'onStateChange': onPlayerStateChange,
+            'onError': onError
+          }
+        });
+      }
+
+      function onPlayerReady(event) {
+        player.loadPlaylist({
+          list: playlist,
+          suggestedQuality: playbackQuality
+        });
+        player.mute();
+
+        setTimeout(function() {
+          player.setShuffle(true);
+          player.playVideoAt(0);
+        }, 5000);
+      }
+
+      function onError(event) {
+        var id = event.data;
+        console.log('YouTube error', id);
+        if (id == 100 || id == 101 || id == 150) {
+          setTimeout(function() {
+            player.nextVideo();
+          }, 5000);
+        }
+        else {
+          console.log('Unhandled YouTube error', id);
+          setTimeout(function() {
+            location.reload();
+          }, 5000);
+        }
+      }
+
+      function onPlayerStateChange(event) {
+        //console.log(event.data);
+        if (event.data == YT.PlayerState.PLAYING) {
+          player.setPlaybackQuality(playbackQuality);
+        }
+      }
+    </script>
+  </body>
+</html>
