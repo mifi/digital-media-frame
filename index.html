@@ -20,22 +20,56 @@
     <div id="player"></div>
 
     <script src="https://code.jquery.com/jquery-2.2.0.min.js"></script>
+    <script src="underscore-min.js"></script>
 
     <script>
-    /*
-    https://developers.google.com/youtube/js_api_reference
-    https://developers.google.com/youtube/player_parameters?playerVersion=HTML5
-    https://developers.google.com/youtube/player_parameters
-    */
-    // Test error by going to video "91 - Transformation"
+      /*
+      https://developers.google.com/youtube/js_api_reference
+      https://developers.google.com/youtube/player_parameters?playerVersion=HTML5
+      https://developers.google.com/youtube/player_parameters
+      */
+      // Test error by going to video "91 - Transformation" in playlist PL4166A6B67CF5C6AE
 
-      var playlist = 'PL4166A6B67CF5C6AE';
-      /*var playbackQuality = 'hd720';
-      var playerWidth = '1280';
-      var playerHeight = '720';*/
-      var playerWidth = '1024';
-      var playerHeight = '600';
-      var playbackQuality = 'large';
+
+      //var env = 'test';
+      var env = 'production';
+
+      var envConfig = {
+        test: {
+          playbackQuality: 'hd720',
+          playerWidth: '1280',
+          playerHeight: '720',
+          showinfo: '1',
+          controls: '1',
+          mute: false
+        },
+        production: {
+          playerWidth: '1024',
+          playerHeight: '600',
+          playbackQuality: 'large',
+          showinfo: '0',
+          controls: '0',
+          mute: true
+        }
+      }
+
+      var config = envConfig[env];
+
+      var playlists = [
+        'PL4166A6B67CF5C6AE', // Time lapse
+        'PLgTLZSbwbEZx50O61ogD2z9a6a0ZvohJQ', // Time lapse
+        'PLRVpVqA1yzHNL2yXCfnxE7H_EhVDA3CLF', // ISS Time lapse
+        'PLkMnGIVT8gLVOW9WaWOT1v1cclKfwEHsk', // City time lapse
+        'PLnuf8iyXggLEGxnI1mOXioVeDfMHml_qq', // Red Bull Earth Porn
+        'UUwgURKfUA7e0Z7_qE3TvBFQ', // devinsupertramp all videos
+        'PLSSPBo7OVSZvJtRrcF5CVSjRkmH9eNWA3', // GoPro Staff's Top Picks
+        'PL55DC89E245188F1F', // GoPro Video of the Day!
+        'PL8JmD9rOrDD3UbBjJ37KF0x-aA0PImpNY', // People are awesome
+        'PLcWzFJqiKcCzaFo07F2kEqEzRBpKjDrXQ', // People are awesome
+      ];
+      var playlistAt = 0;
+
+      playlists = _.shuffle(playlists);
 
 
       // 2. This code loads the IFrame Player API code asynchronously.
@@ -48,16 +82,16 @@
       var player;
       function onYouTubeIframeAPIReady() {
         player = new YT.Player('player', {
-          height: playerHeight,
-          width: playerWidth,
+          height: config.playerHeight,
+          width: config.playerWidth,
           playerVars: {
             /*autoplay: '1',*/
             fs: '0',
             loop: '1',
             modestbranding: '1',
-            controls: 0,
             iv_load_policy: '3',
-            showinfo: '0'
+            showinfo: config.showinfo,
+            controls: config.controls,
           },
           events: {
             'onReady': onPlayerReady,
@@ -67,17 +101,17 @@
         });
       }
 
-      function onPlayerReady(event) {
-        player.loadPlaylist({
+      function advancePlaylist() {
+        var playlist = playlists[playlistAt % playlists.length];
+        player.cuePlaylist({
           list: playlist,
-          suggestedQuality: playbackQuality
+          suggestedQuality: config.playbackQuality
         });
-        player.mute();
+      }
 
-        setTimeout(function() {
-          player.setShuffle(true);
-          player.playVideoAt(0);
-        }, 5000);
+      function onPlayerReady(event) {
+        if (config.mute) player.mute();
+        advancePlaylist();
       }
 
       function onError(event) {
@@ -99,7 +133,16 @@
       function onPlayerStateChange(event) {
         //console.log(event.data);
         if (event.data == YT.PlayerState.PLAYING) {
-          player.setPlaybackQuality(playbackQuality);
+          player.setPlaybackQuality(config.playbackQuality);
+          //player.setPlaybackRate(0.5);
+        }
+        else if (event.data == YT.PlayerState.CUED) {
+          player.setShuffle(true);
+          player.playVideoAt(0);
+        }
+        else if (event.data == YT.PlayerState.ENDED) {
+          playlistAt++;
+          advancePlaylist();
         }
       }
     </script>
