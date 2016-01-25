@@ -1,0 +1,62 @@
+<!doctype html>
+<html>
+<head>
+    <title></title>
+    <style>
+        body { font: 13px Helvetica, Arial; }
+        .active-playlist {
+            font-weight: bold;
+        }
+        #playlists li {
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Admin</h1>
+
+<h2>Playlists</h2>
+<ul id="playlists">
+</ul>
+
+<button id="nextPlaylist">Next Playlist</button>
+<button id="nextVideo">Next Video</button>
+<button id="reload">Reload app</button>
+
+<script src="/socket.io/socket.io.js"></script>
+<script src="http://code.jquery.com/jquery-1.11.1.js"></script>
+<script src="underscore-min.js"></script>
+
+<script>
+    $(function() {
+        var socket = io();
+
+        socket.on('connect', function () {
+            socket.emit('getData');
+
+            socket.on('data', function(data){
+                $('#playlists').empty().append(_.map(data.playlists, function(playlist, i) {
+                    var elem = $('<li>').text(playlist.name);
+                    if (data.currentPlaylist.id == playlist.id) elem.addClass('active-playlist');
+                    elem.click(function() {
+                        socket.emit('playPlaylist', i);
+                    });
+                    return elem;
+                }));
+            });
+
+            $('#nextVideo').click(function () {
+                socket.emit('nextVideo');
+            });
+            $('#nextPlaylist').click(function () {
+                socket.emit('nextPlaylist');
+            });
+            $('#reload').click(function () {
+                socket.emit('reload');
+            });
+        });
+    });
+</script>
+</body>
+</html>
