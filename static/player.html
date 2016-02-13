@@ -43,7 +43,8 @@
             playerHeight: '720',
             showinfo: '1',
             controls: '1',
-            mute: false
+            mute: false,
+            autoReloadTimeoutMinutes: 60
         },
         production: {
             playerWidth: '1024',
@@ -52,7 +53,8 @@
             playbackQuality: 'medium',
             showinfo: '0',
             controls: '0',
-            mute: true
+            mute: true,
+            autoReloadTimeoutMinutes: 60
         }
     };
 
@@ -70,7 +72,8 @@
         {id: 'PL8JmD9rOrDD3UbBjJ37KF0x-aA0PImpNY', name: 'People are awesome'},
         {id: 'PLcWzFJqiKcCzaFo07F2kEqEzRBpKjDrXQ', name: 'People are awesome'},
         {id: 'PLMTp9RfQQN7OhFNnMN_VP60wRenSeBaTn', name: 'People are awesome'},
-        {id: 'PL91b3450-tG6gExslRjA1mcmK5YO1y1rk', name: 'People are awesome'}
+        {id: 'PL91b3450-tG6gExslRjA1mcmK5YO1y1rk', name: 'People are awesome'},
+        {id: 'PLBg1SJiXSxfKi639YOHzyIFON_Tz5KG8T', name: 'UMF FILMS'}
     ];
     var playlistAt = 0;
 
@@ -143,11 +146,22 @@
         }
     }
 
+    function is360video() {
+        return $('.ytp-webgl-spherical-control').css('display') == 'none';
+    }
+
+    function isSupportedVideo() {
+        return !is360video();
+    }
+
     function onPlayerStateChange(event) {
         //console.log(event.data);
         if (event.data == YT.PlayerState.PLAYING) {
             player.setPlaybackQuality(config.playbackQuality);
             //player.setPlaybackRate(0.5);
+            if (!isSupportedVideo()) {
+                player.nextVideo();
+            }
         }
         else if (event.data == YT.PlayerState.CUED) {
             player.setShuffle(true);
@@ -189,6 +203,10 @@
 
         emitData();
     });
+
+    setTimeout(function() {
+        location.reload();
+    }, autoReloadTimeoutMinutes*60*1000);
 </script>
 </body>
 </html>
