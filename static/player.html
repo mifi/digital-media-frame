@@ -44,7 +44,6 @@
             showinfo: '1',
             controls: '1',
             mute: false,
-            autoReloadTimeoutMinutes: 60
         },
         production: {
             playerWidth: '1024',
@@ -54,7 +53,6 @@
             showinfo: '0',
             controls: '0',
             mute: true,
-            autoReloadTimeoutMinutes: 60
         }
     };
 
@@ -203,10 +201,6 @@
 
         emitData();
     });
-
-    setTimeout(function() {
-        location.reload();
-    }, autoReloadTimeoutMinutes*60*1000);
 </script>
 </body>
 </html>
