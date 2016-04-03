@@ -3,8 +3,9 @@
 const spawn = require('child_process').spawn;
 const path = require('path');
 
-const restartInterval = 2*60*60*1000;
-//const restartInterval = 13*1000;
+const killInterval = 2*60*60*1000;
+const restartTimeout = 60*1000;
+//const killInterval = 13*1000;
 
 var proc = null;
 
@@ -18,7 +19,7 @@ function startProcess() {
   proc = spawn('chromium-browser', ['--kiosk', '--incognito', '--disable-3d-apis', '--disable-webgl', '--safebrowsing-disable-auto-update', '--safebrowsing-disable-download-protection', 'http://localhost:8080/player.html']);
 
   proc.on('close', function() {
-    setTimeout(startProcess, 10000);
+    setTimeout(startProcess, restartTimeout);
   });
 
   proc.on('error', function(err) {
@@ -34,6 +35,6 @@ function startProcess() {
   });
 }
 
-setInterval(killProcess, restartInterval);
+setInterval(killProcess, killInterval);
 
 startProcess();
