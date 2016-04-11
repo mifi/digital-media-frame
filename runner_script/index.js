@@ -16,7 +16,7 @@ function killProcess() {
 
 function startProcess() {
   //proc = spawn('bash', [path.join(__dirname, './test.sh')]);
-  proc = spawn('chromium-browser', ['--kiosk', '--incognito', '--disable-3d-apis', '--disable-webgl', '--safebrowsing-disable-auto-update', '--safebrowsing-disable-download-protection', 'http://localhost:8080/player.html']);
+  proc = spawn('chromium-browser', ['--kiosk', '--incognito', '--disable-3d-apis', '--disable-webgl', '--safebrowsing-disable-auto-update', '--safebrowsing-disable-download-protection', '--remote-debugging-port=9222', 'http://localhost:8080/player.html']);
 
   proc.on('close', function() {
     setTimeout(startProcess, restartTimeout);
