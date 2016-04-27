@@ -18,6 +18,7 @@
   "homepage": "https://github.com/mifi/digital-media-frame#readme",
   "dependencies": {
     "express": "^4.13.4",
-    "socket.io": "^1.4.4"
+    "socket.io": "^1.4.4",
+    "yr.no-forecast": "0.0.7"
   }
 }

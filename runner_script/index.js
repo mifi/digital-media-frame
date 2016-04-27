@@ -2,10 +2,15 @@
 
 const spawn = require('child_process').spawn;
 const path = require('path');
+const schedule = require('node-schedule');
 
 const killInterval = 2*60*60*1000;
 const restartTimeout = 60*1000;
 //const killInterval = 13*1000;
+
+const startHour = 9;
+const stopHour = 23;
+
 
 var proc = null;
 
@@ -35,6 +40,23 @@ function startProcess() {
   });
 }
 
+function turnScreen(on) {
+  var dpmsProc = spawn('xset', ['dpms', 'force', (on ? 'on' : 'off')]);
+
+  setTimeout(function() {
+    dpmsProc.kill('SIGTERM');
+  }, 10000);
+}
+
+
 setInterval(killProcess, killInterval);
 
 startProcess();
+
+schedule.scheduleJob('0 ' + startHour + ' * * *', function() {
+  turnScreen(true);
+});
+
+schedule.scheduleJob('0 ' + stopHour + ' * * *', function() {
+  turnScreen(false);
+});

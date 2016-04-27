@@ -1,28 +1,22 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <style type="text/css">
-        html, body {
-            padding: 0;
-            margin: 0;
-            overflow: hidden;
-            background: black;
-        }
-        #player {
-            width: 100vw;
-            height: 100vh;
-        }
-    </style>
+  <link rel="stylesheet" type="text/css" href="styles.css">
+
+  <link href='https://fonts.googleapis.com/css?family=Open+Sans+Condensed:300' rel='stylesheet' type='text/css'>
 </head>
 
 <body>
-<!-- 1. The <iframe> (and video player) will replace this <div> tag. -->
+
+<div id="info-container"></div>
+
 <div id="player"></div>
 
 <script src="/socket.io/socket.io.js"></script>
 <script src="https://code.jquery.com/jquery-2.2.0.min.js"></script>
 
 <script src="underscore-min.js"></script>
+<script src="moment.js"></script>
 
 <script>
     /*
@@ -77,6 +71,8 @@
     var playlistAt = 0;
 
     playlists = _.shuffle(playlists);
+
+    var weatherData = null;
 
 
     // 2. This code loads the IFrame Player API code asynchronously.
@@ -200,8 +196,20 @@
             emitData();
         });
 
+        socket.on('weatherData', function(newWeatherData) {
+          weatherData = newWeatherData;
+
+          console.log(weatherData);
+          $('#info-container').text(moment().format('ddd MMM Do HH:mm:ss') + (weatherData ? ' | ' + weatherData.temperature.replace('celsius', '°C') + ' ' + weatherData.icon : ''));
+        });
+
         emitData();
     });
+
+
+    setInterval(function() {
+      socket.emit('getWeatherData');
+    }, 1000);
 </script>
 </body>
 </html>
