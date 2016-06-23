@@ -2,6 +2,7 @@
 <html>
 <head>
   <link rel="stylesheet" type="text/css" href="styles.css">
+  <link rel="stylesheet" type="text/css" href="weather-icons/css/weather-icons.css">
 
   <link href='https://fonts.googleapis.com/css?family=Open+Sans+Condensed:300' rel='stylesheet' type='text/css'>
 </head>
@@ -17,6 +18,7 @@
 
 <script src="underscore-min.js"></script>
 <script src="moment.js"></script>
+<script src="weather.js"></script>
 
 <script>
     /*
@@ -200,7 +202,23 @@
           weatherData = newWeatherData;
 
           console.log(weatherData);
-          $('#info-container').text(moment().format('ddd MMM Do HH:mm:ss') + (weatherData ? ' | ' + weatherData.temperature.replace('celsius', '°C') + ' ' + weatherData.icon : ''));
+
+          var timestamp = moment().format('ddd MMM Do HH:mm:ss');
+
+          if (weatherData) {
+            var temperature = weatherData.temperature.replace('celsius', '°C');
+            var icon = getWeatherIcon(weatherData.icon);
+
+            var $html = $('<span/>')
+              .text(timestamp)
+              .append('<i class="wi ' + icon + '"></i>')
+              .append($('<span/>').text(temperature));
+
+            $('#info-container').html($html);
+          }
+          else {
+            $('#info-container').text(timestamp);
+          }
         });
 
         emitData();
